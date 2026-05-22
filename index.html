@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>埔心鄰長 太平山觀摩活動小幫手</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", -apple-system, sans-serif;
+            background-color: #f4f6f9;
+            font-size: 1.1rem;
+        }
+        .header-banner {
+            background: linear-gradient(135deg, #1e7e34, #28a745);
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+            border-bottom: 4px solid #ffc107;
+        }
+        .nav-pills .nav-link {
+            color: #333;
+            font-weight: bold;
+            background-color: #fff;
+            margin: 5px;
+            border: 1px solid #ddd;
+            font-size: 1.1rem;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card-header {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .notice-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .timeline-item {
+            padding: 15px;
+            border-left: 3px solid #28a745;
+            position: relative;
+            background: #fff;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+        }
+        .timeline-time {
+            font-weight: bold;
+            color: #1e7e34;
+        }
+        .highlight-search {
+            background-color: #ffeb3b !important;
+            font-weight: bold;
+            color: #000 !important;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { box-shadow: 0 0 5px #ffeb3b; }
+            to { box-shadow: 0 0 15px #ffeb3b; }
+        }
+        .bus-layout {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .seat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .seat-pair {
+            display: flex;
+            gap: 5px;
+        }
+        .seat {
+            width: 80px;
+            height: 50px;
+            background-color: #fff;
+            border: 2px solid #6c757d;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        .seat.driver { background-color: #ffc107; color: black; }
+        .seat.door { background-color: #17a2b8; color: white; border-color: #17a2b8; }
+        .seat.leader { background-color: #d63384; color: white; border-color: #d63384; }
+        .search-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background-color: #f4f6f9;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-banner">
+    <h2><i class="fa-solid fa-mountain-sun"></i> 埔心里鄰長觀摩活動</h2>
+    <h5 class="mb-0">宜蘭太平山、翠峰湖、鳳梨屋二日遊</h5>
+    <small>出發日期：115年5月29日、30日 (星期五、六)</small>
+</div>
+
+<div class="container mt-3 mb-5">
+    
+    <div class="notice-box">
+        <i class="fa-solid fa-circle-exclamation"></i> 貼心提醒：第二天請穿著【團體服】！請記得攜帶：暈車藥、口罩、健保卡、陽傘、帽子。
+    </div>
+
+    <div class="search-sticky">
+        <div class="input-group">
+            <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" id="nameSearch" class="form-control form-control-lg" placeholder="輸入姓名，快速查找座位/桌次/房間..." oninput="searchName()">
+            <button class="btn btn-secondary" onclick="clearSearch()">清除</button>
+        </div>
+    </div>
+
+    <ul class="nav nav-pills nav-fill my-3" id="tourTab" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button"><i class="fa-solid fa-calendar-days"></i> 行程</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="bus-tab" data-bs-toggle="tab" data-bs-target="#bus" type="button"><i class="fa-solid fa-bus"></i> 遊覽車</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="restaurant-tab" data-bs-toggle="tab" data-bs-target="#restaurant" type="button"><i class="fa-solid fa-utensils"></i> 桌次</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="room-tab" data-bs-toggle="tab" data-bs-target="#room" type="button"><i class="fa-solid fa-hotel"></i> 房間</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="tourTabContent">
+        
+        <div class="tab-pane fade show active" id="schedule" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-success text-white">第一天：115/5/29 (星期五)</div>
+                <div class="card-body">
+                    <div class="timeline-item">
+                        <span class="timeline-time">06:15</span> <span class="badge bg-danger">土地公集合</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">06:30</span> <span class="badge bg-primary">里辦出發</span> 國道風光、車上卡拉OK歡唱、熱片欣賞。
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">上午</span> 經頭城休息區，至英士休息站搭乘 9 人座接駁車前往【見晴懷古步道】（新闢人車分道長約1.3公里，步行約20-25分）。
+                        <img src="https://images.unsplash.com/photo-1589136777351-fdc9c9c8536b?auto=format&fit=crop&w=800&q=80" class="img-fluid rounded my-2 shadow-sm" alt="見晴懷古步道" style="max-height: 250px; width: 100%; object-fit: cover;">
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">中午</span> 前往台灣最大高山湖泊【翠峰湖】（海拔1,840公尺），晨昏變化萬千。於山上享用便當。
+                        <img src="https://images.unsplash.com/photo-1624513904183-fca25e2d6778?auto=format&fit=crop&w=800&q=80" class="img-fluid rounded my-2 shadow-sm" alt="翠峰湖" style="max-height: 250px; width: 100%; object-fit: cover;">
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">下午</span> 遊覽【太平山國家森林遊樂區】，芬多精與陰離子清新充沛。※蹦蹦車需現場購票（限定1人買10張，有票即搭乘，無票則放棄）。
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">晚上</span> 沿途下山，夜宿【英仕山莊】。享用晚餐（10人一桌附2瓶飲料），晚餐後安排卡拉OK歡唱及招待點心！
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-info text-dark">第二天：115/5/30 (星期六)</div>
+                <div class="card-body">
+                    <div class="notice-box py-1 px-2 mb-2"><i class="fa-solid fa-shirt"></i> 提醒：今日請穿著團體服！</div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">07:00</span> 晨喚，於 1 樓享用早餐。
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">08:00</span> 準時退房離開英仕山莊。
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">上午</span> 前往【九寮溪自然步道】。步道沿溪而建，水質清涼（近冷泉），沿途可欣賞氣勢磅礴的九寮溪瀑布（玉蘭/戈霸瀑布），全程平坦好走。
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">中午</span> 享用午餐。
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">下午</span> 網美必拍聖地【鳳梨屋水上莊園】。園區內有水濂瀑布鞦韆、浪漫月亮躺椅等豐富好拍場景。
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" class="img-fluid rounded my-2 shadow-sm" alt="鳳梨屋莊園景緻" style="max-height: 250px; width: 100%; object-fit: cover;">
+                    </div>
+                    <div class="timeline-item">
+                        <span class="timeline-time">傍晚</span> 經雪山隧道，享用美味晚餐後，圓滿結束旅程，期待再相會！
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="bus" role="tabpanel">
+            <div class="alert alert-secondary text-center">遊覽車座位表 (42座 8輪旗艦車) [cite: 1]</div>
+            <div class="bus-layout search-area">
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat driver">駕駛<br>劉玉田 [cite: 2]</div>
+                        <div class="seat bg-light text-muted">呂燕玉<br><small class="text-danger">(素)</small> [cite: 2, 3]</div>
+                    </div>
+                    <div>
+                        <div class="seat leader">領隊<br>游源隆 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat bg-light text-muted"></div>
+                        <div class="seat">盧宜芳 [cite: 2]</div>
+                    </div>
+                    <div>
+                        <div class="seat door">前門 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">李傳培 [cite: 2]</div>
+                        <div class="seat">賴矜桂 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">游源隆 [cite: 2]</div>
+                        <div class="seat">盧宜芳 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">郭秋雪 [cite: 2]</div>
+                        <div class="seat">戴美菊 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">蔡美足 [cite: 2]</div>
+                        <div class="seat">胡玉蓮 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">李玉貴 [cite: 2]</div>
+                        <div class="seat">呂學修 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">李鳳玉 [cite: 2]</div>
+                        <div class="seat">毛瑜琳 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">游素月 [cite: 2]</div>
+                        <div class="seat">廖又賢 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">李碧雲 [cite: 2]</div>
+                        <div class="seat">郭秀霞 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat door bg-danger text-white">安全門 [cite: 2]</div>
+                    </div>
+                    <div>
+                        <div class="seat door">後門 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">王文亮 [cite: 2]</div>
+                        <div class="seat">鄭淑娟 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">張舟輕 [cite: 2]</div>
+                        <div class="seat">陳正則 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">游宏鈞 [cite: 2]</div>
+                        <div class="seat">黃家羚 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">張遠福 [cite: 2]</div>
+                        <div class="seat">傅新媚 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">詹翠翠 [cite: 2]</div>
+                        <div class="seat">游獲廣 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">李政益 [cite: 2]</div>
+                        <div class="seat">王富美 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">李應章 [cite: 2]</div>
+                        <div class="seat">簡松勇 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">游源和 [cite: 2]</div>
+                        <div class="seat">邱明瑞 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">倪惠英 [cite: 2]</div>
+                        <div class="seat">呂雅筑 [cite: 2]</div>
+                    </div>
+                    <div class="seat-pair">
+                        <div class="seat">沈原祿 [cite: 2]</div>
+                        <div class="seat">沈睿恩 [cite: 2]</div>
+                    </div>
+                </div>
+                <div class="seat-row">
+                    <div class="seat-pair">
+                        <div class="seat">李政村 [cite: 2]</div>
+                        <div class="seat">黃慧俊 [cite: 2]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="restaurant" role="tabpanel">
+            <div class="alert alert-warning text-dark text-center"><strong>素食人員提醒：</strong>呂燕玉 乙位 [cite: 3]</div>
+            <div class="row search-area g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-success h-100">
+                        <div class="card-header bg-success text-white text-center">第一桌 [cite: 3]</div>
+                        <ul class="list-group list-group-flush text-center fw-bold">
+                            <li class="list-group-item">游源隆 [cite: 3]</li><li class="list-group-item">盧宜芳 [cite: 3]</li>
+                            <li class="list-group-item">張舟輕 [cite: 3]</li><li class="list-group-item">陳正則 [cite: 3]</li>
+                            <li class="list-group-item">張遠福 [cite: 3]</li><li class="list-group-item">傅新媚 [cite: 3]</li>
+                            <li class="list-group-item">王文亮 [cite: 3]</li><li class="list-group-item">鄭淑娟 [cite: 3]</li>
+                            <li class="list-group-item">簡松勇 [cite: 3]</li><li class="list-group-item text-muted">（空位） [cite: 3]</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-primary h-100">
+                        <div class="card-header bg-primary text-white text-center">第二桌 [cite: 3]</div>
+                        <ul class="list-group list-group-flush text-center fw-bold">
+                            <li class="list-group-item">李傳培 [cite: 3]</li><li class="list-group-item">賴矜桂 [cite: 3]</li>
+                            <li class="list-group-item">李政村 [cite: 3]</li><li class="list-group-item">黃慧俊 [cite: 3]</li>
+                            <li class="list-group-item">李玉貴 [cite: 3]</li><li class="list-group-item">呂學修 [cite: 3]</li>
+                            <li class="list-group-item">李政益 [cite: 3]</li><li class="list-group-item">王富美 [cite: 3]</li>
+                            <li class="list-group-item">沈原祿 [cite: 3]</li><li class="list-group-item">沈睿恩 [cite: 3]</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-info h-100">
+                        <div class="card-header bg-info text-dark text-center">第三桌 [cite: 3]</div>
+                        <ul class="list-group list-group-flush text-center fw-bold">
+                            <li class="list-group-item">倪惠英 [cite: 3]</li><li class="list-group-item">呂雅筑 [cite: 3]</li>
+                            <li class="list-group-item">李應章 [cite: 3]</li><li class="list-group-item">游素月 [cite: 3]</li>
+                            <li class="list-group-item">廖又賢 [cite: 3]</li><li class="list-group-item">劉玉田 [cite: 3]</li>
+                            <li class="list-group-item">李碧雲 [cite: 3]</li><li class="list-group-item">郭秀霞 [cite: 3]</li>
+                            <li class="list-group-item">郭秋雪 [cite: 3]</li><li class="list-group-item">戴美菊 [cite: 3]</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card border-warning h-100">
+                        <div class="card-header bg-warning text-dark text-center">第四桌 [cite: 3]</div>
+                        <ul class="list-group list-group-flush text-center fw-bold">
+                            <li class="list-group-item">游源和 [cite: 3]</li><li class="list-group-item">邱明瑞 [cite: 3]</li>
+                            <li class="list-group-item">游獲廣 [cite: 3]</li><li class="list-group-item">詹翠翠 [cite: 3]</li>
+                            <li class="list-group-item">游宏鈞 [cite: 3]</li><li class="list-group-item">黃家羚 [cite: 3]</li>
+                            <li class="list-group-item">蔡美足 [cite: 3]</li><li class="list-group-item">胡玉蓮 [cite: 3]</li>
+                            <li class="list-group-item">李鳳玉 [cite: 3]</li><li class="list-group-item">毛瑜琳 [cite: 3]</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="room" role="tabpanel">
+            <div class="alert alert-success text-center">住宿：英仕山莊 房間分配表 [cite: 1, 4]</div>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 search-area">
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">游源隆 ＆ 盧宜芳 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">張舟輕 ＆ 陳正則 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">張遠福 ＆ 傅新媚 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">王文亮 ＆ 鄭淑娟 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">簡松勇 ＆ 李應章 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">李傳培 ＆ 賴矜桂 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">李政村 ＆ 黃慧俊 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">李玉貴 ＆ 呂學修 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">呂燕玉 ＆ 劉玉田 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">沈原祿 ＆ 沈睿恩 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">倪惠英 ＆ 呂雅筑 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">游素月 ＆ 廖又賢 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">李政益 ＆ 王富美 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">李碧雲 ＆ 郭秀霞 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">郭秋雪 ＆ 戴美菊 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">游源和 ＆ 邱明瑞 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">游獲廣 ＆ 詹翠翠 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">游宏鈞 ＆ 黃家羚 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">蔡美足 ＆ 胡玉蓮 [cite: 4]</div></div></div>
+                <div class="col"><div class="card h-100"><div class="card-body text-center fw-bold text-dark d-flex align-items-center justify-content-center">李鳳玉 ＆ 毛瑜琳 [cite: 4]</div></div></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // 姓名搜尋即時高亮功能
+    function searchName() {
+        var input = document.getElementById("nameSearch").value.trim();
+        
+        // 先移除所有舊的高亮
+        var activeHighlights = document.querySelectorAll(".highlight-search");
+        activeHighlights.forEach(function(el) {
+            el.classList.remove("highlight-search");
+        });
+
+        if (input === "") return;
+
+        // 搜尋範圍包含遊覽車、桌次、房間
+        var searchAreas = document.querySelectorAll(".search-area .seat, .search-area .list-group-item, .search-area .card-body");
+        
+        searchAreas.forEach(function(item) {
+            var text = item.innerText || item.textContent;
+            // 排除控制字元、職稱，只匹配人名
+            if (text.indexOf(input) !== -1 && !text.includes("駕駛") && !text.includes("領隊") && !text.includes("安全門")) {
+                item.classList.add("highlight-search");
+            }
+        });
+    }
+
+    // 清除搜尋
+    function clearSearch() {
+        document.getElementById("nameSearch").value = "";
+        searchName();
+    }
+</script>
+
+</body>
+</html>
